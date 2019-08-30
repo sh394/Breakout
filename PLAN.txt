@@ -1,0 +1,36 @@
+Plan
+Kyle Hong(sh394)
+
+what to include in Game Scene
+1. a paddle controlled by keyboard inputs
+2. a bouncing ball in angular movement
+3. collision detection( collision between the wall and the ball, collision between the paddle and the ball)
+4. Life Display(loses a life when the ball goes below the bottom edge, resets the ball with some delays(3s) and texts(Get Ready!), display a message the player lost if a player loses 5 lives)
+5. Score Display-
+6. different types of bricks - bricks that give you useful items,  multi-hit breakable bricks, multi-colored bricks
+7. Items(Power ups)- Spaceship- laser shots from the paddle, Bombs- will lose a life if the bomb hits the paddle. Points power- will give bonus points, Size Power- will make the paddle bigger, Life Ball- add one more life
+8. different types of levels- level 1 -normal breakout, level2- more multi-hit breakable bricks  level 3- simple versus mode
+
+what to include in Main Scene
+	1. Play Button
+	2. Help Button(Includes Text, and Back button)
+
+what to include in Win Scene(if the user completes all three levels)
+	1. display a text that the user has won
+	2.Home Button
+
+what to include in Lose Scene
+	1.display a text that the user has lost
+	2.Home Button
+
+Cheat Code- gets the user input using dialog- if the user input string matches following cheat codes
+list of cheat codes
+1. ”hawaiian shirt” -> Instant win
+2.”show me the score“-> + 1000 score
+
+
+Something Extra
+Very simple versus mode-
+The last level of the game will be a battle between the user and the computer. I will add a paddle controlled by the computer(simply follows the user's paddle). If the user gets 15 blocks faster than the computer, the user will win.
+
+Why I think it is a substantial addition? - it gives a player motivation to play to the end
