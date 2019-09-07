@@ -18,17 +18,17 @@ Hours Spent: about 30 hours
 
 ### Running the Program
 
-Main class:
+Main class: MainScene
 
-Data files needed: 
+Data files needed: text files that contain different type of bricks, Sprite Images
 
-Key/Mouse inputs:
+Key/Mouse inputs: 
 
-Cheat keys:
+Cheat keys: "L" => to the next level, "1" => plus life, "2" => plus score 
 
-Known Bugs:
+Known Bugs: multiple collision between the bricks and the ball at the same time. Breaking two bricks at once. 
 
-Extra credit:
+Extra credit: Pong game like versus mode with the computer in level 3
 
 
 ### Notes

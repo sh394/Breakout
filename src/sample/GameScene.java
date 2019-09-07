@@ -39,8 +39,8 @@ public class GameScene {
     public static final String BRICK_LEVEL_THREE = "brick3.gif";
 
     public static final String SIZE_POWER = "sizepower.gif";
-    public static final String SCORE_POWER = "scorepower.gif";
-    public static final String LASWER_POWER = "laswerpower.gif";
+    public static final String POINTS_POWER = "pointspower.gif";
+    public static final String LASWER_POWER = "laserpower.gif";
 
 
     private Group gameRoot;
@@ -63,12 +63,14 @@ public class GameScene {
     private Ball ball;
     private Brick brick;
     private PowerUp powerUp;
+    private PowerUp powerUp2;
+    private PowerUp powerUp3;
     private Scanner sc;
     private File file;
 
     private List<Label> labels;
     private List<Brick> bricksOnScreen;
-    private List<Brick> toBeRemoved;
+    private List<Sprite> toBeRemoved;
 
     public GameScene() {
         initialize();
@@ -87,6 +89,10 @@ public class GameScene {
         gameStage = new Stage();
         playerPaddle = new Paddle();
         computerPaddle = new Paddle();
+        powerUp = new PowerUp(SIZE_POWER, 200 ,200);
+        powerUp2 = new PowerUp(SIZE_POWER, 200 ,200);
+        powerUp3 = new PowerUp(SIZE_POWER, 200 ,200);
+
         ball = new Ball();
         gameStage.setTitle(GAME_TITLE);
         gameStage.setScene(gameScene);
@@ -114,7 +120,11 @@ public class GameScene {
         ball.move(elapsedTime);
         checkBall(elapsedTime);
         playerPaddle.move();
+        computerPaddle.move();
         checkPaddle(elapsedTime);
+        powerUp.move(elapsedTime);
+        powerUp2.move(elapsedTime);
+        powerUp3.move(elapsedTime);
         lifeLabel.setText("Life: " + life);
         scoreLabel.setText("Score: " + score);
         levelLabel.setText("Level: " + currentLevel);
@@ -180,6 +190,21 @@ public class GameScene {
         } else if(playerPaddle.getX() >= GAME_SCENE_WIDTH-playerPaddle.getWidth()) {
             playerPaddle.setX(GAME_SCENE_WIDTH - playerPaddle.getWidth());
         }
+
+        if(playerPaddle.intersects(powerUp)) {
+            playerPaddle.setWidth(400);
+            toBeRemoved.add(powerUp);
+        }
+
+        if(playerPaddle.intersects(powerUp2)) {
+            System.out.println("powerup 2");
+            toBeRemoved.add(powerUp2);
+        }
+
+        if(playerPaddle.intersects(powerUp3)) {
+            System.out.println("powerup 3");
+            toBeRemoved.add(powerUp3);
+        }
     }
 
     private void removeBrick(Brick brick) {
@@ -203,8 +228,6 @@ public class GameScene {
             removeBrick(brick);
             generateItem(brick);
         }
-
-        System.out.println("x: " + brick.getRow() + "y: " + brick.getCol());
     }
 
     private void checkLevel() {
@@ -212,8 +235,6 @@ public class GameScene {
             this.currentLevel += 1;
             resetGame();
 
-        }else if(currentLevel == 3) {
-           vsMode();
         } else if(currentLevel > 3) {
             System.exit(0);
         }
@@ -249,7 +270,7 @@ public class GameScene {
             }
         }
 
-        for(Brick removeBrick: toBeRemoved) {
+        for(Sprite removeBrick: toBeRemoved) {
             gameRoot.getChildren().remove(removeBrick.getImage());
         }
 
@@ -331,19 +352,33 @@ public class GameScene {
     }
 
     private void generateItem(Brick brick) {
-        randomItem = (int) Math.random()*100 + 1;
+        randomItem = (int) (Math.random()*15) + 1;
+        System.out.println(randomItem);
         if(randomItem == 1) {
             powerUp = new PowerUp(SIZE_POWER,
                     brick.getImage().getBoundsInLocal().getCenterX()
                     , brick.getImage().getBoundsInLocal().getCenterY());
             gameRoot.getChildren().add(powerUp.getImage());
         }
+
+        if(randomItem == 2) {
+            powerUp2 = new PowerUp(POINTS_POWER,
+                    brick.getImage().getBoundsInLocal().getCenterX()
+                    , brick.getImage().getBoundsInLocal().getCenterY());
+            gameRoot.getChildren().add(powerUp2.getImage());
+        }
+
+        if(randomItem == 3) {
+            powerUp3 = new PowerUp(LASWER_POWER,
+                    brick.getImage().getBoundsInLocal().getCenterX()
+                    , brick.getImage().getBoundsInLocal().getCenterY());
+            gameRoot.getChildren().add(powerUp3.getImage());
+        }
     }
 
     private void vsMode() {
         computerPaddle = new Paddle();
         if(currentLevel == 3) {
-            computerPaddle.setY(playerPaddle.getY()/6);
             gameRoot.getChildren().add(computerPaddle.getImage());
         }
     }
