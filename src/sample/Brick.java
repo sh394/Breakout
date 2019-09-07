@@ -24,8 +24,8 @@ public class Brick extends Sprite {
         super(imageName, BRICK_COL_START, BRICK_ROW_START, BRICK_WIDTH, BRICK_HEIGHT);
         setX(BRICK_COL_START + col * 1.1 * BRICK_WIDTH);
         setY(BRICK_ROW_START + row * 2 * BRICK_HEIGHT);
-        this.row = row;
-        this.col = col;
+        setRow(row);
+        setCol(col);
         setBrickLife(brickLife);
     }
 
@@ -42,11 +42,11 @@ public class Brick extends Sprite {
     }
 
     public boolean left(Ball ball) {
-        return this.getImage().getBoundsInLocal().getMinX() >= ball.getImage().getBoundsInLocal().getMaxX();
+        return this.getImage().getBoundsInLocal().getCenterX() >= ball.getImage().getBoundsInLocal().getMaxX();
     }
 
     public boolean right(Ball ball) {
-        return this.getImage().getBoundsInLocal().getMaxX() >= ball.getImage().getBoundsInLocal().getMinX();
+        return this.getImage().getBoundsInLocal().getCenterX() <= ball.getImage().getBoundsInLocal().getMinX();
     }
     public int getRow() {
         return row;

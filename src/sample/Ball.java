@@ -9,7 +9,7 @@ public class Ball extends Sprite{
     public static final int BALL_INIT_X = 300;
     public static final int BALL_INIT_Y = 550;
     public static final int BALL_SIZE = 15;
-    public static final int BALL_SPEED = 100;
+    public static final int BALL_SPEED = 150;
 
     private int xSpeed = 1;
     private int ySpeed = -1;

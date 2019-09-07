@@ -38,6 +38,11 @@ public class GameScene {
     public static final String BRICK_LEVEL_TWO = "brick2.gif";
     public static final String BRICK_LEVEL_THREE = "brick3.gif";
 
+    public static final String SIZE_POWER = "sizepower.gif";
+    public static final String SCORE_POWER = "scorepower.gif";
+    public static final String LASWER_POWER = "laswerpower.gif";
+
+
     private Group gameRoot;
     private Scene gameScene;
     private Stage gameStage;
@@ -54,10 +59,10 @@ public class GameScene {
     private int randomItem;
 
     private Paddle playerPaddle;
-    private Paddle secondPaddle;
     private Paddle computerPaddle;
     private Ball ball;
     private Brick brick;
+    private PowerUp powerUp;
     private Scanner sc;
     private File file;
 
@@ -81,6 +86,7 @@ public class GameScene {
         gameScene = new Scene(gameRoot, GAME_SCENE_WIDTH, GAME_SCENE_HEIGHT);
         gameStage = new Stage();
         playerPaddle = new Paddle();
+        computerPaddle = new Paddle();
         ball = new Ball();
         gameStage.setTitle(GAME_TITLE);
         gameStage.setScene(gameScene);
@@ -107,7 +113,7 @@ public class GameScene {
     private void step(double elapsedTime) {
         ball.move(elapsedTime);
         checkBall(elapsedTime);
-        playerPaddle.move(elapsedTime);
+        playerPaddle.move();
         checkPaddle(elapsedTime);
         lifeLabel.setText("Life: " + life);
         scoreLabel.setText("Score: " + score);
@@ -195,6 +201,7 @@ public class GameScene {
             gameRoot.getChildren().add(brick.getImage());
         } else if(brick.getBrickLife() == 1) {
             removeBrick(brick);
+            generateItem(brick);
         }
 
         System.out.println("x: " + brick.getRow() + "y: " + brick.getCol());
@@ -205,6 +212,8 @@ public class GameScene {
             this.currentLevel += 1;
             resetGame();
 
+        }else if(currentLevel == 3) {
+           vsMode();
         } else if(currentLevel > 3) {
             System.exit(0);
         }
@@ -225,21 +234,17 @@ public class GameScene {
                 ball.setySpeed(1);
                 this.score += 10;
                 rePaintBrick(brickHit);
-                System.out.println("bottom");
             } else if(brickHit.intersects(ball) && brickHit.top((ball))) {
                 ball.setySpeed(-1);
                 this.score += 10;
                 rePaintBrick(brickHit);
-                System.out.println("top");
             } else if(brickHit.intersects(ball) && brickHit.left((ball))) {
                 ball.setxSpeed(-1);
                 this.score += 10;
                 rePaintBrick(brickHit);
-                System.out.println("left");
             } else if(brickHit.intersects(ball) && brickHit.right((ball))) {
                 ball.setxSpeed(1);
                 this.score += 10;
-                System.out.println("right");
                 rePaintBrick(brickHit);
             }
         }
@@ -319,32 +324,52 @@ public class GameScene {
         }
     }
 
-//    private void generateItem() {
-//        randomItem = (int) Math.random()*100 + 1;
-//
-//    }
-
     private void drawBricks(String brickName, int brickLife, int row, int col) {
         brick = new Brick(brickName, brickLife, row ,col);
         gameRoot.getChildren().add(brick.getImage());
         bricksOnScreen.add(brick);
     }
 
+    private void generateItem(Brick brick) {
+        randomItem = (int) Math.random()*100 + 1;
+        if(randomItem == 1) {
+            powerUp = new PowerUp(SIZE_POWER,
+                    brick.getImage().getBoundsInLocal().getCenterX()
+                    , brick.getImage().getBoundsInLocal().getCenterY());
+            gameRoot.getChildren().add(powerUp.getImage());
+        }
+    }
+
+    private void vsMode() {
+        computerPaddle = new Paddle();
+        if(currentLevel == 3) {
+            computerPaddle.setY(playerPaddle.getY()/6);
+            gameRoot.getChildren().add(computerPaddle.getImage());
+        }
+    }
+
     private void handleKeyRelease(KeyCode code) {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
             playerPaddle.setxSpeed(0);
+            computerPaddle.setxSpeed(0);
         }
     }
 
     private void handleKeyInput(KeyCode code) {
         if (code == KeyCode.RIGHT) {
             playerPaddle.setxSpeed(1);
+            computerPaddle.setxSpeed(-1);
         }
         else if (code == KeyCode.LEFT) {
             playerPaddle.setxSpeed(-1);
+            computerPaddle.setxSpeed(1);
         } else if (code == KeyCode.L) {
             this.currentLevel += 1;
             resetGame();
+        } else if (code == KeyCode.DIGIT1) {
+            this.life += 1;
+        } else if (code == KeyCode.DIGIT2) {
+            this.score += 100;
         }
     }
 }

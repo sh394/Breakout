@@ -24,9 +24,9 @@ public class Paddle extends Sprite{
         this.setY(PADDLE_INIT_Y);
     }
 
-    public void move(double elapsedTime) {
+    public void move() {
         if(this.getxSpeed() == 1 || this.getxSpeed() == -1) {
-            this.setX(this.getX()+this.getxSpeed() * PADDLE_BASE_SPEED);
+            this.setX(this.getX()+this.getxSpeed()  * PADDLE_BASE_SPEED);
         }
     }
 

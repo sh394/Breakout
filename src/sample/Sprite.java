@@ -9,7 +9,7 @@ public class Sprite {
 
     }
 
-    public Sprite(String imageName, int initX, int initY, int width, int height) {
+    public Sprite(String imageName, double initX, double initY, int width, int height) {
         setImage(new ImageView(new Image(getClass().getClassLoader().getResourceAsStream(imageName))));
         setX(initX);
         setY(initY);
