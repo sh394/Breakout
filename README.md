@@ -3,15 +3,15 @@ game
 
 This project implements the game of Breakout.
 
-Name: 
+Name: Kyle Hong(sh394)
 
 ### Timeline
 
-Start Date: 
+Start Date: 08/31/2019
 
-Finish Date: 
+Finish Date: 09/06/2019
 
-Hours Spent:
+Hours Spent: about 30 hours
 
 ### Resources Used
 
