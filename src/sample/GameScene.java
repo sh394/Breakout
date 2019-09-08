@@ -40,7 +40,8 @@ public class GameScene {
 
     public static final String SIZE_POWER = "sizepower.gif";
     public static final String POINTS_POWER = "pointspower.gif";
-    public static final String LASWER_POWER = "laserpower.gif";
+    public static final String LASER_POWER = "laserpower.gif";
+    public static final String LASER_BEAM = "laser.png";
 
 
     private Group gameRoot;
@@ -62,9 +63,13 @@ public class GameScene {
     private Paddle computerPaddle;
     private Ball ball;
     private Brick brick;
-    private PowerUp powerUp;
-    private PowerUp powerUp2;
-    private PowerUp powerUp3;
+
+    private PowerUp sizePower;
+    private PowerUp pointsPower;
+    private PowerUp laserPower;
+    private PowerUp laserBeam;
+    private Boolean isLoaded = false;
+
     private Scanner sc;
     private File file;
 
@@ -87,15 +92,18 @@ public class GameScene {
         gameRoot = new Group();
         gameScene = new Scene(gameRoot, GAME_SCENE_WIDTH, GAME_SCENE_HEIGHT);
         gameStage = new Stage();
-        playerPaddle = new Paddle();
-        computerPaddle = new Paddle();
-        powerUp = new PowerUp(SIZE_POWER, 200 ,200);
-        powerUp2 = new PowerUp(SIZE_POWER, 200 ,200);
-        powerUp3 = new PowerUp(SIZE_POWER, 200 ,200);
-
-        ball = new Ball();
         gameStage.setTitle(GAME_TITLE);
         gameStage.setScene(gameScene);
+
+        ball = new Ball();
+        playerPaddle = new Paddle();
+        computerPaddle = new Paddle();
+
+        sizePower = new PowerUp(SIZE_POWER);
+        laserPower = new PowerUp(LASER_POWER);
+        pointsPower = new PowerUp(POINTS_POWER);
+        laserBeam = new PowerUp(LASER_BEAM);
+
         labels = new ArrayList<>();
         toBeRemoved = new CopyOnWriteArrayList<>();
         createScoreBoard();
@@ -122,21 +130,15 @@ public class GameScene {
         playerPaddle.move();
         computerPaddle.move();
         checkPaddle(elapsedTime);
-        powerUp.move(elapsedTime);
-        powerUp2.move(elapsedTime);
-        powerUp3.move(elapsedTime);
-        lifeLabel.setText("Life: " + life);
-        scoreLabel.setText("Score: " + score);
-        levelLabel.setText("Level: " + currentLevel);
+        sizePower.move(elapsedTime);
+        pointsPower.move(elapsedTime);
+        laserPower.move(elapsedTime);
+        laserBeam.move(elapsedTime);
+
+        updateLabels();
         checkEndOfGame();
         paddleAbility();
         checkLevel();
-    }
-
-    private void createLabels() {
-        scoreLabel();
-        lifeLabel();
-        levelLabel();
     }
 
     private void createScoreBoard() {
@@ -145,11 +147,23 @@ public class GameScene {
         gameRoot.getChildren().add(scoreBoard);
     }
 
+    private void updateLabels() {
+        lifeLabel.setText("Life: " + life);
+        scoreLabel.setText("Score: " + score);
+        levelLabel.setText("Level: " + currentLevel);
+    }
+
+    private void createLabels() {
+        scoreLabel();
+        lifeLabel();
+        levelLabel();
+    }
+
     private void addLabels(Label label) {
+        Font font = new Font(30);
         label.setLayoutX(20 + labels.size()*200);
         label.setLayoutY(20);
         label.setTextFill(Color.WHITE);
-        Font font = new Font(30);
         label.setFont(font);
         labels.add(label);
         gameRoot.getChildren().add(label);
@@ -191,19 +205,19 @@ public class GameScene {
             playerPaddle.setX(GAME_SCENE_WIDTH - playerPaddle.getWidth());
         }
 
-        if(playerPaddle.intersects(powerUp)) {
+        if(playerPaddle.intersects(sizePower)) {
             playerPaddle.setWidth(400);
-            toBeRemoved.add(powerUp);
+            toBeRemoved.add(sizePower);
         }
 
-        if(playerPaddle.intersects(powerUp2)) {
-            System.out.println("powerup 2");
-            toBeRemoved.add(powerUp2);
+        if(playerPaddle.intersects(pointsPower)) {
+            this.score += 50;
+            toBeRemoved.add(pointsPower);
         }
 
-        if(playerPaddle.intersects(powerUp3)) {
-            System.out.println("powerup 3");
-            toBeRemoved.add(powerUp3);
+        if(playerPaddle.intersects(laserPower)) {
+            isLoaded = true;
+            toBeRemoved.add(laserPower);
         }
     }
 
@@ -266,6 +280,10 @@ public class GameScene {
             } else if(brickHit.intersects(ball) && brickHit.right((ball))) {
                 ball.setxSpeed(1);
                 this.score += 10;
+                rePaintBrick(brickHit);
+            } else if(brickHit.intersects(laserBeam)) {
+                laserBeam.setItemSpeed(1);
+                toBeRemoved.add(laserBeam);
                 rePaintBrick(brickHit);
             }
         }
@@ -355,24 +373,24 @@ public class GameScene {
         randomItem = (int) (Math.random()*15) + 1;
         System.out.println(randomItem);
         if(randomItem == 1) {
-            powerUp = new PowerUp(SIZE_POWER,
-                    brick.getImage().getBoundsInLocal().getCenterX()
-                    , brick.getImage().getBoundsInLocal().getCenterY());
-            gameRoot.getChildren().add(powerUp.getImage());
+            sizePower = new PowerUp(SIZE_POWER);
+            sizePower.setX(brick.getX() + brick.getWidth() / 2);
+            sizePower.setY(brick.getY() + brick.getHeight() / 2);
+            gameRoot.getChildren().add(sizePower.getImage());
         }
 
         if(randomItem == 2) {
-            powerUp2 = new PowerUp(POINTS_POWER,
-                    brick.getImage().getBoundsInLocal().getCenterX()
-                    , brick.getImage().getBoundsInLocal().getCenterY());
-            gameRoot.getChildren().add(powerUp2.getImage());
+            pointsPower = new PowerUp(POINTS_POWER);
+            pointsPower.setX(brick.getX() + brick.getWidth() / 2);
+            pointsPower.setY(brick.getY() + brick.getHeight() / 2);
+            gameRoot.getChildren().add(pointsPower.getImage());
         }
 
         if(randomItem == 3) {
-            powerUp3 = new PowerUp(LASWER_POWER,
-                    brick.getImage().getBoundsInLocal().getCenterX()
-                    , brick.getImage().getBoundsInLocal().getCenterY());
-            gameRoot.getChildren().add(powerUp3.getImage());
+            laserPower = new PowerUp(LASER_POWER);
+            laserPower.setX(brick.getX() + brick.getWidth() / 2);
+            laserPower.setY(brick.getY() + brick.getHeight() / 2);
+            gameRoot.getChildren().add(laserPower.getImage());
         }
     }
 
@@ -390,6 +408,15 @@ public class GameScene {
         }
     }
 
+    private void laserShoot() {
+        laserBeam = new PowerUp("laser.png");
+        laserBeam.setX(playerPaddle.getX() + playerPaddle.getWidth() / 2);
+        laserBeam.setY(playerPaddle.getY() + playerPaddle.getHeight() / 2);
+        laserBeam.setItemSpeed(-1);
+        gameRoot.getChildren().add(laserBeam.getImage());
+        isLoaded = false;
+    }
+
     private void handleKeyInput(KeyCode code) {
         if (code == KeyCode.RIGHT) {
             playerPaddle.setxSpeed(1);
@@ -404,7 +431,9 @@ public class GameScene {
         } else if (code == KeyCode.DIGIT1) {
             this.life += 1;
         } else if (code == KeyCode.DIGIT2) {
-            this.score += 100;
+            this.score += 10;
+        } else if (code == KeyCode.SPACE && isLoaded) {
+            laserShoot();
         }
     }
 }
