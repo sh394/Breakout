@@ -29,9 +29,6 @@ public class Brick extends Sprite {
         setBrickLife(brickLife);
     }
 
-    public boolean collide(Ball ball) {
-        return (this.getImage().intersects(ball.getImage().getBoundsInLocal()) && bottom(ball));
-    }
 
     public boolean bottom(Ball ball) {
         return this.getImage().getBoundsInLocal().getMaxY() <= ball.getImage().getBoundsInLocal().getMinY();
