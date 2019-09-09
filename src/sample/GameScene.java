@@ -160,6 +160,7 @@ public class GameScene {
         } else if(currentLevel == 3) {
             vsMode();
         }
+        removeSprites();
     }
 
     private void createScoreBoard() {
@@ -226,7 +227,7 @@ public class GameScene {
 
     private void paddleAbility() {
         if(this.life == 1) {
-            playerPaddle.setWidth(200);
+            playerPaddle.setWidth(300);
         }
         if(this.score == 100) {
             playerPaddle.setWidth(70);
@@ -236,22 +237,29 @@ public class GameScene {
         }
     }
 
+    private void paddleTeleport(Paddle paddle) {
+        if(paddle.getX() < 0 - paddle.getWidth()) { paddle.setX(GAME_SCENE_WIDTH);}
+        else if (paddle.getX() > GAME_SCENE_WIDTH) {
+           paddle.setX(0 - paddle.getWidth());
+        }
+    }
+
+    private void paddleOffBoundary(Paddle paddle) {
+        if(paddle.getX() >= GAME_SCENE_WIDTH - paddle.getWidth()) {
+            paddle.setX(GAME_SCENE_WIDTH - paddle.getWidth());
+        }
+    }
+
     private void checkPaddle(double elapsedTime) {
         //keep the paddle in the boundary
         if(!teleport) {
-            if(playerPaddle.getX() <= 0) { playerPaddle.setX(0);}
-            else if(playerPaddle.getX() >= GAME_SCENE_WIDTH-playerPaddle.getWidth()) {
-                playerPaddle.setX(GAME_SCENE_WIDTH - playerPaddle.getWidth());
-            }
+            paddleOffBoundary(playerPaddle);
         } else {
-            if(playerPaddle.getX() < 0 - playerPaddle.getWidth()) { playerPaddle.setX(GAME_SCENE_WIDTH);}
-            else if (playerPaddle.getX() > GAME_SCENE_WIDTH) {
-                playerPaddle.setX(0 - playerPaddle.getWidth());
-            }
+            paddleTeleport(playerPaddle);
         }
 
         if(playerPaddle.intersects(sizePower)) {
-            playerPaddle.setWidth(400);
+            playerPaddle.setWidth(200);
             toBeRemoved.add(sizePower);
         }
 
@@ -263,6 +271,51 @@ public class GameScene {
         if(playerPaddle.intersects(laserPower)) {
             isLoaded = true;
             toBeRemoved.add(laserPower);
+        }
+    }
+
+    private void checkBall(double elapsedTime) {
+        //collision with bricks
+        for(Brick brickHit : bricksOnScreen) {
+            if(brickHit.intersects(ball) && brickHit.bottom((ball))) {
+                ball.setySpeed(1);
+                battleScore();
+                rePaintBrick(brickHit);
+            } else if(brickHit.intersects(ball) && brickHit.top((ball))) {
+                ball.setySpeed(-1);
+                battleScore();
+                rePaintBrick(brickHit);
+            } else if(brickHit.intersects(ball) && brickHit.left((ball))) {
+                ball.setxSpeed(-1);
+                battleScore();
+                rePaintBrick(brickHit);
+            } else if(brickHit.intersects(ball) && brickHit.right((ball))) {
+                ball.setxSpeed(1);
+                battleScore();
+                rePaintBrick(brickHit);
+            } else if(brickHit.intersects(laserBeam)) {
+                laserBeam.setItemSpeed(1);
+                toBeRemoved.add(laserBeam);
+                rePaintBrick(brickHit);
+            }
+        }
+
+        //check collision with the paddle
+        if(ball.intersects(playerPaddle)) {
+            ball.setySpeed(-1);
+            recentlyHit = 1;
+        }
+
+        //check collision with walls
+        if(ball.getImage().getX() >= GAME_SCENE_WIDTH - ball.getWidth()) {ball.setxSpeed(-1);}
+        else if(ball.getImage().getX() <= 0) { ball.setxSpeed(1);}
+        else if(ball.getImage().getY() <= scoreBoard.getBoundsInLocal().getMaxY()) {ball.setySpeed(1);}
+
+        ///bottom edge
+        if(ball.getImage().getY() >= GAME_SCENE_HEIGHT) {
+            this.life -= 1;
+            ball.resetBall();
+            playerPaddle.resetPaddle();
         }
     }
 
@@ -289,54 +342,6 @@ public class GameScene {
         }
     }
 
-    private void checkBall(double elapsedTime) {
-        for(Brick brickHit : bricksOnScreen) {
-            if(brickHit.intersects(ball) && brickHit.bottom((ball))) {
-                ball.setySpeed(1);
-                battleScore();
-                rePaintBrick(brickHit);
-            } else if(brickHit.intersects(ball) && brickHit.top((ball))) {
-                ball.setySpeed(-1);
-                battleScore();
-                rePaintBrick(brickHit);
-            } else if(brickHit.intersects(ball) && brickHit.left((ball))) {
-                ball.setxSpeed(-1);
-                battleScore();
-                rePaintBrick(brickHit);
-            } else if(brickHit.intersects(ball) && brickHit.right((ball))) {
-                ball.setxSpeed(1);
-                battleScore();
-                rePaintBrick(brickHit);
-            } else if(brickHit.intersects(laserBeam)) {
-                laserBeam.setItemSpeed(1);
-                toBeRemoved.add(laserBeam);
-                rePaintBrick(brickHit);
-            }
-            System.out.println(recentlyHit);
-        }
-
-        for(Sprite removeBrick: toBeRemoved) {
-            gameRoot.getChildren().remove(removeBrick.getImage());
-        }
-
-        //check collision with paddle
-        if(ball.intersects(playerPaddle)) {
-            ball.setySpeed(-1);
-            recentlyHit = 1;
-        }
-
-        //check collision with walls
-        if(ball.getImage().getX() >= GAME_SCENE_WIDTH - ball.getWidth()) {ball.setxSpeed(-1);}
-        else if(ball.getImage().getX() <= 0) { ball.setxSpeed(1);}
-        else if(ball.getImage().getY() <= scoreBoard.getBoundsInLocal().getMaxY()) {ball.setySpeed(1);}
-
-        ///bottom edge
-        if(ball.getImage().getY() >= GAME_SCENE_HEIGHT) {
-            this.life -= 1;
-            ball.resetBall();
-            playerPaddle.resetPaddle();
-        }
-    }
 
     private void battleScore() {
         if(recentlyHit == 2) {
@@ -345,7 +350,6 @@ public class GameScene {
             this.score += 10;
         }
     }
-    //check whether player is alive, resets sprites
 
     private void getBrickInput(int currentLevel)  {
         List<String[]> bricks = new ArrayList<>();
@@ -391,27 +395,28 @@ public class GameScene {
         bricksOnScreen.add(brick);
     }
 
+    private void addItems(PowerUp item, Brick brick) {
+        item.setX(brick.getX() + brick.getWidth() / 2);
+        item.setY(brick.getY() + brick.getHeight() / 2);
+        gameRoot.getChildren().add(item.getImage());
+    }
+
     private void generateItem(Brick brick) {
         randomItem = (int) (Math.random()*20) + 1;
+        System.out.println(randomItem);
         if(randomItem == 1) {
             sizePower = new PowerUp(SIZE_POWER);
-            sizePower.setX(brick.getX() + brick.getWidth() / 2);
-            sizePower.setY(brick.getY() + brick.getHeight() / 2);
-            gameRoot.getChildren().add(sizePower.getImage());
+            addItems(sizePower, brick);
         }
 
         if(randomItem == 2) {
             pointsPower = new PowerUp(POINTS_POWER);
-            pointsPower.setX(brick.getX() + brick.getWidth() / 2);
-            pointsPower.setY(brick.getY() + brick.getHeight() / 2);
-            gameRoot.getChildren().add(pointsPower.getImage());
+           addItems(pointsPower, brick);
         }
 
         if(randomItem == 3) {
             laserPower = new PowerUp(LASER_POWER);
-            laserPower.setX(brick.getX() + brick.getWidth() / 2);
-            laserPower.setY(brick.getY() + brick.getHeight() / 2);
-            gameRoot.getChildren().add(laserPower.getImage());
+            addItems(laserPower, brick);
         }
     }
 
@@ -432,9 +437,7 @@ public class GameScene {
             vsModeOn = true;
         }
         computerPaddle.setX(ball.getX());
-        if(computerPaddle.getX() >= GAME_SCENE_WIDTH - computerPaddle.getWidth()) {
-            computerPaddle.setX(GAME_SCENE_WIDTH - computerPaddle.getWidth());
-        }
+        paddleOffBoundary(computerPaddle);
         if(ball.intersects(computerPaddle)) {
             ball.setySpeed(1);
             this.recentlyHit = 2;
@@ -450,6 +453,12 @@ public class GameScene {
         playerPaddle.resetPaddle();
         getBrickInput(currentLevel);
         this.score = 0;
+    }
+
+    private void removeSprites() {
+        for(Sprite removeBrick: toBeRemoved) {
+            gameRoot.getChildren().remove(removeBrick.getImage());
+        }
     }
 
     private void handleKeyRelease(KeyCode code) {
