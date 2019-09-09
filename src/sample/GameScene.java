@@ -62,7 +62,7 @@ public class GameScene {
     private int currentLevel = 1;
     private int life = 3;
     private int randomItem;
-    private int recentlyHit;
+    private String recentlyHit;
 
     private Paddle playerPaddle;
     private Paddle computerPaddle;
@@ -77,6 +77,7 @@ public class GameScene {
     private Boolean isLoaded = false;
     private Boolean vsModeOn = false;
     private Boolean teleport = false;
+    private Boolean ballDead = false;
 
 
     private Scanner sc;
@@ -144,8 +145,8 @@ public class GameScene {
         checkBall(elapsedTime);
         checkPaddle(elapsedTime);
 
-        updateLabels();
         paddleAbility();
+        updateLabels();
         checkGameFlow();
     }
 
@@ -226,36 +227,28 @@ public class GameScene {
     }
 
     private void paddleAbility() {
-        if(this.life == 1) {
-            playerPaddle.setWidth(300);
+        if(ball.intersects(playerPaddle)) {
+            if(ball.getX() < playerPaddle.getImage().getBoundsInLocal().getCenterX()) {
+                ball.setBallSpeed(200);
+            } else if (ball.getX() > playerPaddle.getImage().getBoundsInLocal().getCenterX()) {
+                ball.setBallSpeed(100);
+            }
         }
-        if(this.score == 100) {
-            playerPaddle.setWidth(70);
+
+        if(this.life == 1) {
+            playerPaddle.setWidth(200);
         }
         if(this.score == 300) {
             isLoaded = true;
         }
     }
 
-    private void paddleTeleport(Paddle paddle) {
-        if(paddle.getX() < 0 - paddle.getWidth()) { paddle.setX(GAME_SCENE_WIDTH);}
-        else if (paddle.getX() > GAME_SCENE_WIDTH) {
-           paddle.setX(0 - paddle.getWidth());
-        }
-    }
-
-    private void paddleOffBoundary(Paddle paddle) {
-        if(paddle.getX() >= GAME_SCENE_WIDTH - paddle.getWidth()) {
-            paddle.setX(GAME_SCENE_WIDTH - paddle.getWidth());
-        }
-    }
-
     private void checkPaddle(double elapsedTime) {
         //keep the paddle in the boundary
         if(!teleport) {
-            paddleOffBoundary(playerPaddle);
+            playerPaddle.paddleOffBoundary(GAME_SCENE_WIDTH);
         } else {
-            paddleTeleport(playerPaddle);
+            playerPaddle.paddleTeleport(GAME_SCENE_WIDTH);
         }
 
         if(playerPaddle.intersects(sizePower)) {
@@ -303,21 +296,21 @@ public class GameScene {
         //check collision with the paddle
         if(ball.intersects(playerPaddle)) {
             ball.setySpeed(-1);
-            recentlyHit = 1;
+            recentlyHit = "player";
         }
 
-        //check collision with walls
-        if(ball.getImage().getX() >= GAME_SCENE_WIDTH - ball.getWidth()) {ball.setxSpeed(-1);}
-        else if(ball.getImage().getX() <= 0) { ball.setxSpeed(1);}
-        else if(ball.getImage().getY() <= scoreBoard.getBoundsInLocal().getMaxY()) {ball.setySpeed(1);}
+        ball.ballOffBoundary(GAME_SCENE_WIDTH, GAME_SCENE_HEIGHT);
+        checkBallDead();
+    }
 
-        ///bottom edge
+    private void checkBallDead() {
         if(ball.getImage().getY() >= GAME_SCENE_HEIGHT) {
             this.life -= 1;
             ball.resetBall();
             playerPaddle.resetPaddle();
         }
     }
+
 
     private void removeBrick(Brick brick) {
         gameRoot.getChildren().remove(brick.getImage());
@@ -344,7 +337,7 @@ public class GameScene {
 
 
     private void battleScore() {
-        if(recentlyHit == 2) {
+        if(recentlyHit == "computer") {
             this.score -= 10;
         } else {
             this.score += 10;
@@ -437,10 +430,10 @@ public class GameScene {
             vsModeOn = true;
         }
         computerPaddle.setX(ball.getX());
-        paddleOffBoundary(computerPaddle);
+        computerPaddle.paddleOffBoundary(GAME_SCENE_WIDTH);
         if(ball.intersects(computerPaddle)) {
             ball.setySpeed(1);
-            this.recentlyHit = 2;
+            this.recentlyHit = "computer";
         }
     }
 

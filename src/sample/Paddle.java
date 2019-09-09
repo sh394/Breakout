@@ -26,6 +26,20 @@ public class Paddle extends Sprite{
         this.setHeight(PADDLE_HEIGHT);
     }
 
+    public void paddleOffBoundary(int xBoundary) {
+        if(this.getX() >= xBoundary - this.getWidth()) {
+            this.setX(xBoundary - this.getWidth());
+        } else if(this.getX() <= 0) {
+           this.setX(0);
+        }
+    }
+
+    public void paddleTeleport(int xBoundary) {
+        if(this.getX() < 0 - this.getWidth()) { this.setX(xBoundary);}
+        else if (this.getX() > xBoundary) {
+           this.setX(0 - this.getWidth());
+        }
+    }
 
     public void move() {
         if(this.getxSpeed() == 1 || this.getxSpeed() == -1) {
