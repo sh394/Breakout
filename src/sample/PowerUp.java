@@ -17,5 +17,4 @@ public class PowerUp extends Sprite {
     public void setItemSpeed(int itemSpeed) {
         this.itemSpeed = itemSpeed;
     }
-
 }

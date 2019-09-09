@@ -30,11 +30,9 @@ public class Ball extends Sprite{
         setySpeed(-1);
     }
 
-
     public void setxSpeed(int xSpeed) {
         this.xSpeed = xSpeed;
     }
-
 
     public void setySpeed(int ySpeed) {
         this.ySpeed = ySpeed;

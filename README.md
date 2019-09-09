@@ -32,17 +32,19 @@ Main class: MainScene
 Data files needed: text files that contain different type of bricks, Sprite Images
 
 Key/Mouse inputs: 
+Use the left and right arrows on your Keyboard to move your paddle, Use the space bar on the keyboard when you have Laser Power to shoot a fireball that can break a brick.
 
 Cheat keys: "1" => to the first level, 
             "2" => to the second level
             "3" => to the last level
-            "L" => additional life        
+            "L" => additional life
+            "T" => enable the paddle to move to the different side of the wall.        
                      
   
 
 Known Bugs: multiple collision between the bricks and the ball at the same time. Breaking two bricks at once. Only one of the items of the same kind moves in the screen.
 
-Extra credit: Pong game like versus mode with the computer in level 3
+Extra credit: Pong game like versus mode with the computer in level 3. You lose score every time the opponent paddle hits one of the bricks and will eventually lose the game if the score gets 0 before you break every bricks on the screen.
 
 
 ### Notes

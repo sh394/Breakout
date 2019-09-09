@@ -22,6 +22,8 @@ public class Paddle extends Sprite{
     public void resetPaddle() {
         this.setX(PADDLE_INIT_X);
         this.setY(PADDLE_INIT_Y);
+        this.setWidth(PADDLE_WIDTH);
+        this.setHeight(PADDLE_HEIGHT);
     }
 
 

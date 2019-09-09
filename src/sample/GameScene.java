@@ -62,6 +62,7 @@ public class GameScene {
     private int currentLevel = 1;
     private int life = 3;
     private int randomItem;
+    private int recentlyHit;
 
     private Paddle playerPaddle;
     private Paddle computerPaddle;
@@ -154,7 +155,7 @@ public class GameScene {
             resetGame();
         } else if(bricksOnScreen.size() == 0 && currentLevel == 3) {
             winScreen();
-        } else if(this.life == 0) {
+        } else if(this.life == 0 || this.score < 0) {
             loseScreen();
         } else if(currentLevel == 3) {
             vsMode();
@@ -225,12 +226,11 @@ public class GameScene {
 
     private void paddleAbility() {
         if(this.life == 1) {
-            playerPaddle.setWidth(300);
+            playerPaddle.setWidth(200);
         }
         if(this.score == 100) {
-
+            playerPaddle.setWidth(70);
         }
-
         if(this.score == 300) {
             isLoaded = true;
         }
@@ -249,7 +249,6 @@ public class GameScene {
                 playerPaddle.setX(0 - playerPaddle.getWidth());
             }
         }
-
 
         if(playerPaddle.intersects(sizePower)) {
             playerPaddle.setWidth(400);
@@ -294,25 +293,26 @@ public class GameScene {
         for(Brick brickHit : bricksOnScreen) {
             if(brickHit.intersects(ball) && brickHit.bottom((ball))) {
                 ball.setySpeed(1);
-                this.score += 10;
+                battleScore();
                 rePaintBrick(brickHit);
             } else if(brickHit.intersects(ball) && brickHit.top((ball))) {
                 ball.setySpeed(-1);
-                this.score += 10;
+                battleScore();
                 rePaintBrick(brickHit);
             } else if(brickHit.intersects(ball) && brickHit.left((ball))) {
                 ball.setxSpeed(-1);
-                this.score += 10;
+                battleScore();
                 rePaintBrick(brickHit);
             } else if(brickHit.intersects(ball) && brickHit.right((ball))) {
                 ball.setxSpeed(1);
-                this.score += 10;
+                battleScore();
                 rePaintBrick(brickHit);
             } else if(brickHit.intersects(laserBeam)) {
                 laserBeam.setItemSpeed(1);
                 toBeRemoved.add(laserBeam);
                 rePaintBrick(brickHit);
             }
+            System.out.println(recentlyHit);
         }
 
         for(Sprite removeBrick: toBeRemoved) {
@@ -320,8 +320,10 @@ public class GameScene {
         }
 
         //check collision with paddle
-        if(ball.intersects(playerPaddle)) { ball.setySpeed(-1);};
-        if(ball.intersects(computerPaddle)) {ball.setySpeed(1);}
+        if(ball.intersects(playerPaddle)) {
+            ball.setySpeed(-1);
+            recentlyHit = 1;
+        }
 
         //check collision with walls
         if(ball.getImage().getX() >= GAME_SCENE_WIDTH - ball.getWidth()) {ball.setxSpeed(-1);}
@@ -336,6 +338,13 @@ public class GameScene {
         }
     }
 
+    private void battleScore() {
+        if(recentlyHit == 2) {
+            this.score -= 10;
+        } else {
+            this.score += 10;
+        }
+    }
     //check whether player is alive, resets sprites
 
     private void getBrickInput(int currentLevel)  {
@@ -383,7 +392,7 @@ public class GameScene {
     }
 
     private void generateItem(Brick brick) {
-        randomItem = (int) (Math.random()*15) + 1;
+        randomItem = (int) (Math.random()*20) + 1;
         if(randomItem == 1) {
             sizePower = new PowerUp(SIZE_POWER);
             sizePower.setX(brick.getX() + brick.getWidth() / 2);
@@ -415,7 +424,6 @@ public class GameScene {
         isLoaded = false;
     }
 
-
     private void vsMode() {
         if(!vsModeOn) {
             computerPaddle = new Paddle();
@@ -426,6 +434,10 @@ public class GameScene {
         computerPaddle.setX(ball.getX());
         if(computerPaddle.getX() >= GAME_SCENE_WIDTH - computerPaddle.getWidth()) {
             computerPaddle.setX(GAME_SCENE_WIDTH - computerPaddle.getWidth());
+        }
+        if(ball.intersects(computerPaddle)) {
+            ball.setySpeed(1);
+            this.recentlyHit = 2;
         }
     }
 
@@ -439,7 +451,6 @@ public class GameScene {
         getBrickInput(currentLevel);
         this.score = 0;
     }
-
 
     private void handleKeyRelease(KeyCode code) {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
