@@ -119,8 +119,12 @@ public class MainScene extends Application {
                         + "Click Play to start\n"
                         + "Use the left and right arrows on your Keyboard to move your paddle\n"
                         + "This game is composed of three items(laser power, extra power, size power)\n "
-                        + "two cheat codes(hawaiian shirt => instant win, show me the score= > + 1000 score\n"
-                        + "three levels.\n"
+                        + "four cheat codes\"1\" => to the first level,"
+                        + " \"2\" => to the second level"
+                        + "\"3\" => to the last level\n"
+                        + "\"L\" => additional life"
+                        + "\"T\" => enable the paddle to move to the different side of the wall.\n"
+                        + "and three levels.\n"
                         +"Enjoy!"
         );
 

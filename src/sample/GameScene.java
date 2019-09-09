@@ -311,7 +311,6 @@ public class GameScene {
         }
     }
 
-
     private void removeBrick(Brick brick) {
         gameRoot.getChildren().remove(brick.getImage());
         bricksOnScreen.remove(brick);
@@ -396,7 +395,6 @@ public class GameScene {
 
     private void generateItem(Brick brick) {
         randomItem = (int) (Math.random()*20) + 1;
-        System.out.println(randomItem);
         if(randomItem == 1) {
             sizePower = new PowerUp(SIZE_POWER);
             addItems(sizePower, brick);

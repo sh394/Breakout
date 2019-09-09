@@ -24,6 +24,8 @@ JavaFx switching scenes : http://www.learningaboutelectronics.com/Articles/How-t
 
 Reading a text file in java: https://www.geeksforgeeks.org/different-ways-reading-text-file-java/
 
+logo image : https://www.gameex.info/forums/calendar/event/126-breakout-arcade-game-april-1976/
+
 
 ### Running the Program
 
